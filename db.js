@@ -1,20 +1,22 @@
 const mariadb = require('mariadb')
 
 const pool = mariadb.createPool({
-    host: 'localhost',
-    port: '3306',
+    host: '127.0.0.1',
     user: 'root',
     password: 'hola',
     database: 'docker_mariadb'
 });
 
-function getConn() {
-    try {
-        const conn = pool.getConnection()
-        return conn
-    } catch (e) {
-        console.log(e)
+// This really helps https://hackernoon.com/getting-started-with-mariadb-using-docker-and-nodejs-fo433yp2
+
+module.exports = {
+    getConnection: function() {
+        return new Promise(function(resolve, reject){
+            pool.getConnection().then(function(connection){
+                resolve(connection);
+            }).catch(function(error){
+                reject(error);
+            });
+        });
     }
 }
-
-module.exports = {getConn}
